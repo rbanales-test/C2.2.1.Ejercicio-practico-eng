@@ -5,21 +5,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Practical Sound Design: Synth Brass Swell</title>
     <style>
-        /* Coursera-inspired Academic UI */
         :root {
             --primary-blue: #0056D2;
-            --primary-hover: #00419e;
+            --primary-hover: #00419E;
             --bg-page: #FFFFFF;
             --bg-panel: #F5F7FA;
+            --bg-card: #FFFFFF;
             --bg-success: #E6F4EA;
             --text-main: #1F2431;
-            --text-muted: #63636B;
+            --text-muted: #595962;
             --text-success: #0D652D;
-            --border-color: #E2E6EA;
-            --border-success: #CEEAD6;
-            --focus-ring: rgba(0, 86, 210, 0.4);
-            
-            --brass-color: #D4AF37; /* Gold/Brass accent */
+            --border-color: #D1D5DB;
+            --border-success: #A8DAB5;
+            --brass-color: #D4AF37;
         }
 
         body {
@@ -27,8 +25,8 @@
             color: var(--text-main);
             background-color: var(--bg-page);
             line-height: 1.5;
-            padding: 2rem;
-            max-width: 900px;
+            padding: 2rem 1rem;
+            max-width: 960px;
             margin: 0 auto;
         }
 
@@ -40,20 +38,25 @@
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
         }
 
-        h2 { margin-top: 0; font-size: 1.5rem; font-weight: 600; }
+        h1 { 
+            margin-top: 0; 
+            font-size: 1.6rem; 
+            font-weight: 700; 
+            color: var(--text-main);
+        }
         
         .mission-banner {
             background-color: #FFF3CD;
-            color: #856404;
-            border: 1px solid #FFEEBA;
-            padding: 1rem;
-            border-radius: 4px;
+            color: #533F03; /* Ratio de contraste > 7:1 en WCAG AA */
+            border: 1px solid #FFE69C;
+            padding: 1.25rem;
+            border-radius: 6px;
             margin-bottom: 1.5rem;
             font-weight: 500;
             display: flex;
             align-items: flex-start;
             gap: 0.75rem;
-            transition: all 0.3s ease;
+            transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
         }
 
         .mission-banner.success {
@@ -62,11 +65,15 @@
             border-color: var(--border-success);
         }
 
+        .mission-icon {
+            font-size: 1.25rem;
+            line-height: 1;
+        }
+
         .oscilloscope-container {
-            background: #111;
+            background: #111111;
             border: 2px solid var(--text-main);
             border-radius: 6px;
-            padding: 0;
             margin-bottom: 1.5rem;
             position: relative;
             overflow: hidden;
@@ -86,51 +93,72 @@
             font-size: 0.75rem;
             font-weight: bold;
             font-family: monospace;
-            padding: 2px 6px;
+            padding: 3px 8px;
             border-radius: 3px;
             color: var(--brass-color);
-            background: rgba(255,255,255,0.1);
-            border: 1px solid rgba(212, 175, 55, 0.3);
+            background: rgba(0, 0, 0, 0.75);
+            border: 1px solid rgba(212, 175, 55, 0.5);
             z-index: 10;
         }
 
+        /* Rejilla de 4 pasos */
         .controls-grid {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 1.5rem;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.25rem;
             margin-bottom: 1.5rem;
+        }
+
+        @media (min-width: 860px) {
+            .controls-grid { grid-template-columns: repeat(4, 1fr); }
+        }
+
+        @media (max-width: 580px) {
+            .controls-grid { grid-template-columns: 1fr; }
         }
 
         .control-group {
             display: flex;
             flex-direction: column;
-            background: var(--bg-page);
+            background: var(--bg-card);
             padding: 1rem;
             border: 1px solid var(--border-color);
             border-radius: 6px;
         }
 
-        .control-group h3 {
+        .control-group h2 {
             margin: 0 0 0.5rem 0;
             font-size: 0.95rem;
+            font-weight: 700;
             color: var(--primary-blue);
         }
 
         label {
             font-size: 0.85rem;
             font-weight: 600;
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.25rem;
             display: flex;
             justify-content: space-between;
+            align-items: baseline;
         }
 
-        .value-display { font-weight: 400; }
+        .value-display { 
+            font-weight: 700;
+            color: var(--text-main);
+        }
 
         input[type="range"] {
             width: 100%;
             margin: 0.5rem 0;
             cursor: pointer;
             accent-color: var(--primary-blue);
+        }
+
+        .key-sub { 
+            font-size: 0.75rem; 
+            font-weight: 400; 
+            color: var(--text-muted); 
+            line-height: 1.3;
         }
 
         .keyboard-area {
@@ -141,30 +169,40 @@
         .btn-key {
             flex: 1;
             border: 2px solid var(--text-main);
-            padding: 1rem;
+            padding: 1.2rem;
             font-size: 1rem;
             font-weight: 600;
             border-radius: 6px;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: background-color 0.15s, transform 0.15s;
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 0.25rem;
-            background: white;
+            gap: 0.35rem;
+            background: #FFFFFF;
             color: var(--text-main);
         }
 
-        .btn-key:hover { background: #f0f0f0; transform: translateY(1px); }
-        .btn-key:active, .btn-key.active { background: #e0e0e0; transform: translateY(3px); box-shadow: inset 0 3px 5px rgba(0,0,0,0.1); }
-        .btn-key:focus { outline: 3px solid var(--focus-ring); outline-offset: 2px; }
+        .btn-key:hover { 
+            background: #F0F2F5; 
+            transform: translateY(-1px); 
+        }
 
-        .key-sub { font-size: 0.75rem; font-weight: 400; color: var(--text-muted); }
+        .btn-key:active, 
+        .btn-key.active { 
+            background: #E4E7EB; 
+            transform: translateY(2px); 
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.15); 
+        }
 
-        .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); border: 0; }
+        /* Indicador de foco visible con contraste >= 3:1 (WCAG 2.4.7 / 1.4.11) */
+        .btn-key:focus-visible,
+        input[type="range"]:focus-visible {
+            outline: 3px solid var(--primary-blue);
+            outline-offset: 3px;
+        }
 
-        @media (max-width: 768px) {
-            .controls-grid { grid-template-columns: 1fr; }
+        @media (max-width: 600px) {
             .keyboard-area { flex-direction: column; }
         }
     </style>
@@ -172,70 +210,92 @@
 <body>
 
     <main class="simulator-container" aria-labelledby="sim-title">
-        <h2 id="sim-title">Interactive Challenge: Synth Brass Swell</h2>
+        <h1 id="sim-title">Practical Sound Design: Synth Brass Swell</h1>
         
-        <div id="mission-banner" class="mission-banner" role="status" aria-live="polite">
-            <span id="mission-icon">🎯</span>
+        <!-- Región de estado para lectores de pantalla sin aria-live redundante -->
+        <div id="mission-banner" class="mission-banner" role="status">
+            <span class="mission-icon" id="mission-icon" aria-hidden="true">🎯</span>
             <div id="mission-text">
-                <strong>Your Mission:</strong> Configure the synth to sound like a real brass player. 
-                <ul style="margin: 0.25rem 0 0 0; padding-left: 1.25rem; font-size: 0.9rem;">
-                    <li>Detune the oscillators to <strong>~10 cents</strong> for ensemble thickness.</li>
-                    <li>Set the Attack to <strong>~150 ms</strong> for the lung swell.</li>
-                    <li>Delay the LFO by <strong>~300 ms</strong> for realistic vibrato.</li>
+                <strong>Your Mission:</strong> Configure the 4 synthesis parameters to simulate a living brass instrument:
+                <ul style="margin: 0.35rem 0 0 0; padding-left: 1.25rem; font-size: 0.9rem;">
+                    <li><strong>1. The Ensemble:</strong> Detune the oscillators to <strong>~10 cents</strong>.</li>
+                    <li><strong>2. The Breath:</strong> Set the Swell Attack to <strong>~150 ms</strong> (24 dB/oct filter).</li>
+                    <li><strong>3. Lung Power:</strong> Set Velocity Tracking Depth to <strong>~80%</strong>.</li>
+                    <li><strong>4. Human Emotion:</strong> Delay the vibrato LFO by <strong>~300 ms</strong>.</li>
                 </ul>
             </div>
         </div>
 
-        <div id="aria-live-feedback" class="sr-only" aria-live="polite" aria-atomic="true"></div>
-
+        <!-- Canvas accesible con rol de imagen explícito y descripción alternativa -->
         <div class="oscilloscope-container">
-            <div class="track-label">AUDIO OUTPUT (Press a key to view waveform)</div>
-            <canvas id="oscilloscope" width="800" height="180" aria-label="Real-time oscilloscope showing the brass sound waveform."></canvas>
+            <div class="track-label" aria-hidden="true">AUDIO OUTPUT (24 dB/oct Cascaded Low-Pass)</div>
+            <canvas id="oscilloscope" width="800" height="180" role="img" aria-label="Real-time oscilloscope showing the synth brass waveform."></canvas>
         </div>
 
         <div class="controls-grid">
-            <!-- Parameter 1: Ensemble -->
+            <!-- Paso 1: The Ensemble -->
             <div class="control-group">
-                <h3>1. The Ensemble</h3>
-                <label for="detune-slider">Oscillator Detune <span class="value-display" id="detune-val">0 cents</span></label>
-                <input type="range" id="detune-slider" min="0" max="50" step="1" value="0" aria-label="Oscillator Detune">
-                <div class="key-sub">Slight detuning mimics multiple players.</div>
+                <h2>1. The Ensemble</h2>
+                <label for="detune-slider">
+                    Oscillator Detune <span class="value-display" id="detune-val">0 cents</span>
+                </label>
+                <input type="range" id="detune-slider" min="0" max="50" step="1" value="0" 
+                       aria-describedby="detune-desc" aria-valuetext="0 cents">
+                <div id="detune-desc" class="key-sub">Dual Sawtooths. Detuning creates acoustic phase thickness.</div>
             </div>
 
-            <!-- Parameter 2: Breath -->
+            <!-- Paso 2: The Breath -->
             <div class="control-group">
-                <h3>2. The Breath</h3>
-                <label for="attack-slider">Swell Attack <span class="value-display" id="attack-val">0 ms</span></label>
-                <input type="range" id="attack-slider" min="0" max="500" step="10" value="0" aria-label="Swell Attack Time">
-                <div class="key-sub">Time it takes for air to build up.</div>
+                <h2>2. The Breath</h2>
+                <label for="attack-slider">
+                    Swell Attack <span class="value-display" id="attack-val">0 ms</span>
+                </label>
+                <input type="range" id="attack-slider" min="0" max="500" step="10" value="0" 
+                       aria-describedby="attack-desc" aria-valuetext="0 milliseconds">
+                <div id="attack-desc" class="key-sub">24 dB/oct filter rise (Decay: 300ms, Sustain: 70%).</div>
             </div>
 
-            <!-- Parameter 3: Emotion -->
+            <!-- Paso 3: Lung Power -->
             <div class="control-group">
-                <h3>3. Human Emotion</h3>
-                <label for="delay-slider">Vibrato Delay <span class="value-display" id="delay-val">0 ms</span></label>
-                <input type="range" id="delay-slider" min="0" max="1000" step="50" value="0" aria-label="LFO Vibrato Delay">
-                <div class="key-sub">Wait time before vibrato begins.</div>
+                <h2>3. Lung Power</h2>
+                <label for="velocity-slider">
+                    Velocity Depth <span class="value-display" id="velocity-val">0%</span>
+                </label>
+                <input type="range" id="velocity-slider" min="0" max="100" step="5" value="0" 
+                       aria-describedby="velocity-desc" aria-valuetext="0 percent">
+                <div id="velocity-desc" class="key-sub">Maps key strike velocity directly to filter envelope brightness.</div>
+            </div>
+
+            <!-- Paso 4: Human Emotion -->
+            <div class="control-group">
+                <h2>4. Human Emotion</h2>
+                <label for="delay-slider">
+                    Vibrato Delay <span class="value-display" id="delay-val">0 ms</span>
+                </label>
+                <input type="range" id="delay-slider" min="0" max="1000" step="50" value="0" 
+                       aria-describedby="delay-desc" aria-valuetext="0 milliseconds">
+                <div id="delay-desc" class="key-sub">5 Hz Triangle LFO pitch modulation start delay.</div>
             </div>
         </div>
 
+        <!-- Botones con nombre accesible alineado al texto visible (WCAG 2.5.3) -->
         <div class="keyboard-area">
-            <button id="btn-soft" class="btn-key" data-velocity="0.3" aria-label="Play Soft Note, Low Velocity">
-                🎹 Play Softly (Low Velocity)
-                <span class="key-sub">Mellow, dark tone</span>
+            <button id="btn-soft" class="btn-key" data-velocity="0.25">
+                <span>🎹 Play Softly (Low Velocity)</span>
+                <span class="key-sub" aria-hidden="true">Warm, dark and mellow tone</span>
             </button>
-            <button id="btn-hard" class="btn-key" data-velocity="1.0" aria-label="Play Hard Note, High Velocity">
-                🎹 Play Hard (High Velocity)
-                <span class="key-sub">Bright, aggressive, brassy</span>
+            <button id="btn-hard" class="btn-key" data-velocity="1.0">
+                <span>🎹 Play Hard (High Velocity)</span>
+                <span class="key-sub" aria-hidden="true">Bright, cutting, brassy bite</span>
             </button>
         </div>
     </main>
 
     <script>
-        // --- State & UI Elements ---
         const state = {
             detune: 0,
             attack: 0,
+            velocityDepth: 0,
             delay: 0,
             isPlaying: false
         };
@@ -243,16 +303,17 @@
         const sliders = {
             detune: document.getElementById('detune-slider'),
             attack: document.getElementById('attack-slider'),
+            velocityDepth: document.getElementById('velocity-slider'),
             delay: document.getElementById('delay-slider')
         };
         
         const displays = {
             detune: document.getElementById('detune-val'),
             attack: document.getElementById('attack-val'),
+            velocityDepth: document.getElementById('velocity-val'),
             delay: document.getElementById('delay-val')
         };
 
-        const ariaLive = document.getElementById('aria-live-feedback');
         const missionBanner = document.getElementById('mission-banner');
         const missionIcon = document.getElementById('mission-icon');
         const missionText = document.getElementById('mission-text');
@@ -260,67 +321,74 @@
         const ctx = canvas.getContext('2d');
         const btns = document.querySelectorAll('.btn-key');
 
-        let audioCtx, analyzer, animationId;
+        let audioCtx, analyzer;
 
-        // --- Event Listeners for UI ---
+        // Actualización de sliders y aria-valuetext nativo
         Object.keys(sliders).forEach(key => {
             sliders[key].addEventListener('input', (e) => {
                 state[key] = parseFloat(e.target.value);
-                const unit = key === 'detune' ? 'cents' : 'ms';
-                displays[key].textContent = `${state[key]} ${unit}`;
-                checkMission();
-            });
+                
+                let unit = 'ms';
+                let accessibleUnit = 'milliseconds';
+                
+                if (key === 'detune') {
+                    unit = 'cents';
+                    accessibleUnit = 'cents';
+                } else if (key === 'velocityDepth') {
+                    unit = '%';
+                    accessibleUnit = 'percent';
+                }
 
-            sliders[key].addEventListener('change', () => {
-                const unit = key === 'detune' ? 'cents' : 'milliseconds';
-                ariaLive.textContent = `${key} set to ${state[key]} ${unit}`;
+                displays[key].textContent = `${state[key]}${unit === '%' ? '%' : ' ' + unit}`;
+                sliders[key].setAttribute('aria-valuetext', `${state[key]} ${accessibleUnit}`);
+                
+                checkMission();
             });
         });
 
-        // --- Mission Validator ---
+        // Verificación de los 4 objetivos pedagógicos
         function checkMission() {
-            // Success ranges based on the narrative
-            const isDetuneOk = state.detune >= 8 && state.detune <= 15; // ~10
-            const isAttackOk = state.attack >= 120 && state.attack <= 180; // ~150
-            const isDelayOk = state.delay >= 250 && state.delay <= 350; // ~300
+            const isDetuneOk = state.detune >= 8 && state.detune <= 15;        // ~10 cents
+            const isAttackOk = state.attack >= 120 && state.attack <= 180;     // ~150 ms
+            const isVelocityOk = state.velocityDepth >= 70 && state.velocityDepth <= 95; // ~80%
+            const isDelayOk = state.delay >= 250 && state.delay <= 350;        // ~300 ms
 
-            if (isDetuneOk && isAttackOk && isDelayOk) {
+            if (isDetuneOk && isAttackOk && isVelocityOk && isDelayOk) {
                 if (!missionBanner.classList.contains('success')) {
                     missionBanner.classList.add('success');
                     missionIcon.textContent = '✅';
-                    missionText.innerHTML = "<strong>Mission Accomplished!</strong> Now play the hard and soft keys. Hear how it sounds like a real brass player breathing into the horn, with organic vibrato kicking in late!";
-                    ariaLive.textContent = "Mission Accomplished! Synth configured successfully.";
+                    missionText.innerHTML = "<strong>Mission Accomplished!</strong> The synth brass sound is now dynamically responsive. Play both keys to hear how low velocity produces a mellow breath, while high velocity punches through with brassy harmonics and late vibrato.";
                 }
             } else {
                 if (missionBanner.classList.contains('success')) {
                     missionBanner.classList.remove('success');
                     missionIcon.textContent = '🎯';
-                    missionText.innerHTML = `<strong>Your Mission:</strong> Configure the synth to sound like a real brass player. 
-                    <ul style="margin: 0.25rem 0 0 0; padding-left: 1.25rem; font-size: 0.9rem;">
-                        <li>Detune the oscillators to <strong>~10 cents</strong> for ensemble thickness.</li>
-                        <li>Set the Attack to <strong>~150 ms</strong> for the lung swell.</li>
-                        <li>Delay the LFO by <strong>~300 ms</strong> for realistic vibrato.</li>
+                    missionText.innerHTML = `<strong>Your Mission:</strong> Configure the 4 synthesis parameters to simulate a living brass instrument:
+                    <ul style="margin: 0.35rem 0 0 0; padding-left: 1.25rem; font-size: 0.9rem;">
+                        <li><strong>1. The Ensemble:</strong> Detune the oscillators to <strong>~10 cents</strong>.</li>
+                        <li><strong>2. The Breath:</strong> Set the Swell Attack to <strong>~150 ms</strong> (24 dB/oct filter).</li>
+                        <li><strong>3. Lung Power:</strong> Set Velocity Tracking Depth to <strong>~80%</strong>.</li>
+                        <li><strong>4. Human Emotion:</strong> Delay the vibrato LFO by <strong>~300 ms</strong>.</li>
                     </ul>`;
                 }
             }
         }
 
-        // --- Audio Engine (Synthesis) ---
         function initAudio() {
             if (!audioCtx) {
                 audioCtx = new (window.AudioContext || window.webkitAudioContext)();
                 analyzer = audioCtx.createAnalyser();
-                analyzer.fftSize = 2048; // For smooth oscilloscope
-                drawOscilloscope(); // Start drawing loop
+                analyzer.fftSize = 2048;
+                drawOscilloscope();
             }
-            if (audioCtx.state === 'suspended') audioCtx.resume();
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
         }
 
-        // Base brass envelope settings (Decay, Sustain, Release)
-        const envSettings = { d: 0.300, s: 0.7, r: 0.250 }; 
-        const baseFreq = 110; // A2
-        
-        let activeNodes = []; // Track nodes to stop them cleanly
+        // Especificaciones acústicas: Attack dinámico, Decay = 300ms, Sustain = 70%, Release = 250ms
+        const envSettings = { d: 0.300, s: 0.70, r: 0.250 }; 
+        const baseFreq = 110; // Nota A2 (La grave)
 
         function playNote(velocity, buttonEl) {
             initAudio();
@@ -332,109 +400,110 @@
             const attackSecs = state.attack / 1000;
             const delaySecs = state.delay / 1000;
 
-            // 1. Oscillators (The Ensemble)
+            // 1. The Ensemble: Dos osciladores Sawtooth
             const osc1 = audioCtx.createOscillator();
             const osc2 = audioCtx.createOscillator();
             osc1.type = 'sawtooth';
             osc2.type = 'sawtooth';
-            
             osc1.frequency.value = baseFreq;
             osc2.frequency.value = baseFreq;
-            // Detune OSC 2
             osc2.detune.value = state.detune;
 
-            // 2. Filter (The Breath & Velocity)
-            const filter = audioCtx.createBiquadFilter();
-            filter.type = 'lowpass';
-            filter.Q.value = 1.5; // Slight resonance
+            // 2 y 3. The Breath & Lung Power: Cascada de dos filtros de 12 dB/oct para sumar 24 dB/oct
+            const filter1 = audioCtx.createBiquadFilter();
+            const filter2 = audioCtx.createBiquadFilter();
+            filter1.type = 'lowpass';
+            filter2.type = 'lowpass';
+            filter1.Q.value = 1.2;
+            filter2.Q.value = 1.2;
 
-            // Filter Velocity Mapping: 
-            // Soft velocity = filter peaks at 800Hz. Hard velocity = peaks at 4000Hz (Brassy!)
-            const filterPeakFreq = 200 + (velocity * 3800); 
-            const filterSustainFreq = 200 + ((filterPeakFreq - 200) * envSettings.s);
+            // Mapeo dinámico de velocidad al corte del filtro
+            const dynamicRange = 3800 * (state.velocityDepth / 100);
+            const baseFloor = 200;
+            const filterPeakFreq = baseFloor + 400 + (velocity * dynamicRange);
+            const filterSustainFreq = baseFloor + ((filterPeakFreq - baseFloor) * envSettings.s);
 
-            filter.frequency.setValueAtTime(100, now); // Start muffled
-            filter.frequency.linearRampToValueAtTime(filterPeakFreq, now + attackSecs);
-            filter.frequency.linearRampToValueAtTime(filterSustainFreq, now + attackSecs + envSettings.d);
+            [filter1, filter2].forEach(filterNode => {
+                filterNode.frequency.setValueAtTime(100, now);
+                filterNode.frequency.linearRampToValueAtTime(filterPeakFreq, now + attackSecs);
+                filterNode.frequency.linearRampToValueAtTime(filterSustainFreq, now + attackSecs + envSettings.d);
+            });
 
-            // 3. Amplitude Envelope
+            // Envolvente de ganancia maestra
             const masterGain = audioCtx.createGain();
-            // Scale total volume by velocity slightly, but mostly let the filter do the dynamic work
-            const peakVol = 0.4 + (velocity * 0.4); 
-            
+            const peakVol = 0.3 + (velocity * 0.4);
             masterGain.gain.setValueAtTime(0, now);
             masterGain.gain.linearRampToValueAtTime(peakVol, now + attackSecs);
             masterGain.gain.linearRampToValueAtTime(peakVol * envSettings.s, now + attackSecs + envSettings.d);
 
-            // 4. Delayed LFO (Vibrato)
+            // 4. Human Emotion: LFO triangular a 5 Hz con retardo
             const lfo = audioCtx.createOscillator();
             lfo.type = 'triangle';
-            lfo.frequency.value = 5; // 5 Hz vibrato
-            
-            const lfoGain = audioCtx.createGain();
-            // Delay the LFO amplitude
-            lfoGain.gain.setValueAtTime(0, now);
-            lfoGain.gain.setValueAtTime(0, now + attackSecs + delaySecs); 
-            // Fade vibrato in over 200ms after the delay
-            lfoGain.gain.linearRampToValueAtTime(15, now + attackSecs + delaySecs + 0.2); 
+            lfo.frequency.value = 5;
 
-            // Routing
+            const lfoGain = audioCtx.createGain();
+            lfoGain.gain.setValueAtTime(0, now);
+            lfoGain.gain.setValueAtTime(0, now + attackSecs + delaySecs);
+            lfoGain.gain.linearRampToValueAtTime(12, now + attackSecs + delaySecs + 0.25); // Entrada gradual del vibrato
+
+            // Enrutamiento de modulación y audio
             lfo.connect(lfoGain);
             lfoGain.connect(osc1.detune);
-            lfoGain.connect(osc2.detune); // Vibrates both
+            lfoGain.connect(osc2.detune);
 
-            osc1.connect(filter);
-            osc2.connect(filter);
-            filter.connect(masterGain);
+            osc1.connect(filter1);
+            osc2.connect(filter1);
+            filter1.connect(filter2); // Filtro en serie (24 dB/octave)
+            filter2.connect(masterGain);
             masterGain.connect(analyzer);
             analyzer.connect(audioCtx.destination);
 
-            // Start
             osc1.start(now);
             osc2.start(now);
             lfo.start(now);
 
-            // Hold note for 1.5 seconds, then release
-            const holdDuration = 1.5;
+            // Sostenimiento y liberación (Release)
+            const holdDuration = 1.4;
             const releaseStart = now + attackSecs + envSettings.d + holdDuration;
-            
+
             masterGain.gain.setValueAtTime(peakVol * envSettings.s, releaseStart);
-            masterGain.gain.linearRampToValueAtTime(0, releaseStart + envSettings.r);
-            
-            filter.frequency.setValueAtTime(filterSustainFreq, releaseStart);
-            filter.frequency.linearRampToValueAtTime(100, releaseStart + envSettings.r);
+            masterGain.gain.linearRampToValueAtTime(0.0001, releaseStart + envSettings.r);
+
+            [filter1, filter2].forEach(filterNode => {
+                filterNode.frequency.setValueAtTime(filterSustainFreq, releaseStart);
+                filterNode.frequency.linearRampToValueAtTime(100, releaseStart + envSettings.r);
+            });
 
             const totalDuration = attackSecs + envSettings.d + holdDuration + envSettings.r;
-            
+
             osc1.stop(now + totalDuration);
             osc2.stop(now + totalDuration);
             lfo.stop(now + totalDuration);
 
-            // Cleanup state
             setTimeout(() => {
                 state.isPlaying = false;
                 buttonEl.classList.remove('active');
             }, totalDuration * 1000);
         }
 
-        // --- Interaction ---
+        // Interacción accesible: soporte táctil, puntero y teclado (Enter / Espacio)
         btns.forEach(btn => {
-            // Support both click and touch, as well as keyboard 'Enter'
             btn.addEventListener('pointerdown', (e) => {
-                e.preventDefault(); // prevent double firing
+                if (e.pointerType === 'mouse' && e.button !== 0) return;
                 playNote(parseFloat(btn.dataset.velocity), btn);
             });
+
             btn.addEventListener('keydown', (e) => {
-                if(e.key === 'Enter' || e.key === ' ') {
+                if (e.key === 'Enter' || e.key === ' ') {
                     e.preventDefault();
                     playNote(parseFloat(btn.dataset.velocity), btn);
                 }
             });
         });
 
-        // --- Visualizer (Oscilloscope) ---
+        // Osciloscopio en tiempo real
         function drawOscilloscope() {
-            animationId = requestAnimationFrame(drawOscilloscope);
+            requestAnimationFrame(drawOscilloscope);
             
             const bufferLength = analyzer.frequencyBinCount;
             const dataArray = new Uint8Array(bufferLength);
@@ -443,24 +512,24 @@
             ctx.fillStyle = '#111111';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-            // Draw center line
+            // Eje central
             ctx.lineWidth = 1;
-            ctx.strokeStyle = '#333';
+            ctx.strokeStyle = '#2B2B2B';
             ctx.beginPath();
             ctx.moveTo(0, canvas.height / 2);
             ctx.lineTo(canvas.width, canvas.height / 2);
             ctx.stroke();
 
-            // Draw Waveform
+            // Trazado de la onda
             ctx.lineWidth = 2;
-            ctx.strokeStyle = '#D4AF37'; // Brass color!
+            ctx.strokeStyle = '#D4AF37';
             ctx.beginPath();
 
-            const sliceWidth = canvas.width * 1.0 / bufferLength;
+            const sliceWidth = canvas.width / bufferLength;
             let x = 0;
 
             for (let i = 0; i < bufferLength; i++) {
-                const v = dataArray[i] / 128.0; // 0 to 2 range
+                const v = dataArray[i] / 128.0;
                 const y = (v * canvas.height) / 2;
 
                 if (i === 0) {
@@ -470,10 +539,10 @@
                 }
                 x += sliceWidth;
             }
+
             ctx.lineTo(canvas.width, canvas.height / 2);
             ctx.stroke();
         }
-
     </script>
 </body>
 </html>
